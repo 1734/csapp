@@ -8,8 +8,8 @@ main:
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
 	movl	$2, %esi
-	movl	$array, %edi
-	call	sum
+	leaq	array(%rip), %rdi
+	call	sum@PLT
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 8
 	ret
@@ -18,11 +18,11 @@ main:
 	.size	main, .-main
 	.globl	array
 	.data
-	.align 4
+	.align 8
 	.type	array, @object
 	.size	array, 8
 array:
 	.long	1
 	.long	2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

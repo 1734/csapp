@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Og
+CFLAGS = -Wall -Og -fcommon -fcf-protection=none
 
 #CFILESONLY = dll\
 #	libvector
@@ -109,6 +109,6 @@ foobar2: foo2.c bar2.c
 
 
 clean:
-	rm -f $(PROGS) *.o *~
+	rm -f $(PROGS) *.o *~ *.d *.a *.so *.out *.da
 
 
