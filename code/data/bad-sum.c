@@ -6,11 +6,11 @@
 /* $begin bad-sum */
 /* WARNING: This is buggy code */
 float sum_elements(float a[], unsigned length) {
-    int i;
+    int i = 0;
     float result = 0;
-
+    printf("%x\n", length-1);
     for (i = 0; i <= length-1; i++)
-	result += a[i];
+        result += a[i];
     return result;
 }
 /* $end bad-sum */
@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     int val = 5;
 
     if (argc > 1)
-	sscanf(argv[1], "%d", &val);
+        sscanf(argv[1], "%d", &val);
     test(val);
     return 0;
 }
