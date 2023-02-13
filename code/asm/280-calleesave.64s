@@ -8,10 +8,10 @@ P:
 	subq	$8, %rsp
 	movq	%rdi, %rbp
 	movq	%rsi, %rdi
-	call	Q
+	call	Q@PLT
 	movq	%rax, %rbx
 	movq	%rbp, %rdi
-	call	Q
+	call	Q@PLT
 	addq	%rbx, %rax
 	addq	$8, %rsp
 	popq	%rbx
@@ -23,14 +23,15 @@ P:
 P2:
 	subq	$24, %rsp
 	movq	%rsi, (%rsp)
-	call	Q
+	call	Q@PLT
 	movq	%rax, 8(%rsp)
 	movq	(%rsp), %rdi
-	call	Q
-	movq	8(%rsp), %rdx
+	call	Q@PLT
+	movq	%rax, %rdx
+	movq	8(%rsp), %rax
 	addq	%rdx, %rax
 	addq	$24, %rsp
 	ret
 	.size	P2, .-P2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

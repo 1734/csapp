@@ -15,8 +15,8 @@ proc:
 	addw	%cx, (%edx)
 	movl	24(%ebp), %edx
 	addb	%dl, (%eax)
-	popl	%ebx
-	popl	%ebp
+	movl	-4(%ebp), %ebx
+	leave
 	ret
 	.size	proc, .-proc
 	.globl	call_proc
@@ -24,26 +24,35 @@ proc:
 call_proc:
 	pushl	%ebp
 	movl	%esp, %ebp
-	subl	$40, %esp
-	movl	$2, -4(%ebp)
-	movw	$3, -6(%ebp)
-	movb	$4, -7(%ebp)
-	leal	-7(%ebp), %eax
-	movl	%eax, 20(%esp)
-	movl	$4, 16(%esp)
-	leal	-6(%ebp), %eax
-	movl	%eax, 12(%esp)
-	movl	$3, 8(%esp)
-	leal	-4(%ebp), %eax
-	movl	%eax, 4(%esp)
-	movl	$2, (%esp)
+	subl	$32, %esp
+	movl	%gs:20, %eax
+	movl	%eax, -12(%ebp)
+	xorl	%eax, %eax
+	movl	$2, -16(%ebp)
+	movw	$3, -18(%ebp)
+	movb	$4, -19(%ebp)
+	leal	-19(%ebp), %eax
+	pushl	%eax
+	pushl	$4
+	leal	-18(%ebp), %eax
+	pushl	%eax
+	pushl	$3
+	leal	-16(%ebp), %eax
+	pushl	%eax
+	pushl	$2
 	call	proc
-	movswl	-6(%ebp), %eax
-	movsbl	-7(%ebp), %edx
+	movswl	-18(%ebp), %eax
+	movsbl	-19(%ebp), %edx
 	subl	%edx, %eax
-	imull	-4(%ebp), %eax
+	imull	-16(%ebp), %eax
+	movl	-12(%ebp), %edx
+	subl	%gs:20, %edx
+	jne	.L6
 	leave
 	ret
+.L6:
+	call	__stack_chk_fail_local
 	.size	call_proc, .-call_proc
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.hidden	__stack_chk_fail_local
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

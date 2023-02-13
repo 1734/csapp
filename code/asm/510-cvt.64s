@@ -51,25 +51,26 @@ cvt_ul2ui:
 	.globl	cvt_sl2d
 	.type	cvt_sl2d, @function
 cvt_sl2d:
+	vxorps	%xmm0, %xmm0, %xmm0
 	vcvtsi2sdq	%rdi, %xmm0, %xmm0
 	ret
 	.size	cvt_sl2d, .-cvt_sl2d
 	.globl	cvt_d2si
 	.type	cvt_d2si, @function
 cvt_d2si:
-	vcvttsd2si	%xmm0, %eax
+	vcvttsd2sil	%xmm0, %eax
 	ret
 	.size	cvt_d2si, .-cvt_d2si
 	.globl	cvt_f2d
 	.type	cvt_f2d, @function
 cvt_f2d:
-	vunpcklps	%xmm0, %xmm0, %xmm0
-	vcvtps2pd	%xmm0, %xmm0
+	vcvtss2sd	%xmm0, %xmm0, %xmm0
 	ret
 	.size	cvt_f2d, .-cvt_f2d
 	.globl	cvt_sl2f
 	.type	cvt_sl2f, @function
 cvt_sl2f:
+	vxorps	%xmm0, %xmm0, %xmm0
 	vcvtsi2ssq	%rdi, %xmm0, %xmm0
 	ret
 	.size	cvt_sl2f, .-cvt_sl2f
@@ -79,5 +80,5 @@ cvt_f2sl:
 	vcvttss2siq	%xmm0, %rax
 	ret
 	.size	cvt_f2sl, .-cvt_f2sl
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

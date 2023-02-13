@@ -21,7 +21,7 @@ P:
 	leaq	7(%rdi), %rdx
 	movq	%rdx, 8(%rsp)
 	movl	$0, %eax
-	call	Q
+	call	Q@PLT
 	leaq	(%rbx,%r15), %rax
 	addq	%r14, %rax
 	addq	%r13, %rax
@@ -38,5 +38,5 @@ P:
 	popq	%r15
 	ret
 	.size	P, .-P
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

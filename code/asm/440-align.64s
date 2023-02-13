@@ -12,7 +12,18 @@ lsize:
 	movl	$40, %eax
 	ret
 	.size	lsize, .-lsize
-	.comm	rec,40,32
-	.comm	rec_a,56,32
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.globl	rec
+	.bss
+	.align 32
+	.type	rec, @object
+	.size	rec, 40
+rec:
+	.zero	40
+	.globl	rec_a
+	.align 32
+	.type	rec_a, @object
+	.size	rec_a, 56
+rec_a:
+	.zero	56
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

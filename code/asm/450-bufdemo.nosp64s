@@ -3,6 +3,7 @@
 	.globl	gets
 	.type	gets, @function
 gets:
+	endbr64
 	pushq	%rbp
 	pushq	%rbx
 	subq	$8, %rsp
@@ -14,7 +15,7 @@ gets:
 	leaq	1(%rbx), %rbx
 .L2:
 	movq	stdin(%rip), %rdi
-	call	_IO_getc
+	call	getc@PLT
 	cmpl	$10, %eax
 	je	.L3
 	cmpl	$-1, %eax
@@ -28,38 +29,43 @@ gets:
 	jne	.L6
 	movb	$0, (%rbx)
 	movq	%rbp, %rax
-	jmp	.L5
-.L6:
-	movl	$0, %eax
-.L5:
+.L1:
 	addq	$8, %rsp
 	popq	%rbx
 	popq	%rbp
 	ret
+.L6:
+	movl	$0, %eax
+	jmp	.L1
 	.size	gets, .-gets
 	.globl	echo
 	.type	echo, @function
 echo:
-	subq	$24, %rsp
-	movq	%rsp, %rdi
+	endbr64
+	pushq	%rbx
+	subq	$16, %rsp
+	leaq	8(%rsp), %rbx
+	movq	%rbx, %rdi
 	call	gets
-	movq	%rsp, %rdi
-	call	puts
-	addq	$24, %rsp
+	movq	%rbx, %rdi
+	call	puts@PLT
+	addq	$16, %rsp
+	popq	%rbx
 	ret
 	.size	echo, .-echo
 	.globl	good_echo
 	.type	good_echo, @function
 good_echo:
+	endbr64
 	subq	$24, %rsp
+	leaq	8(%rsp), %rdi
 	movq	stdin(%rip), %rdx
 	movl	$8, %esi
-	movq	%rsp, %rdi
-	call	fgets
+	call	fgets@PLT
 	testq	%rax, %rax
 	je	.L10
 	movq	%rax, %rdi
-	call	puts
+	call	puts@PLT
 .L10:
 	addq	$24, %rsp
 	ret
@@ -71,24 +77,41 @@ good_echo:
 	.globl	main
 	.type	main, @function
 main:
+	endbr64
 	pushq	%rbx
 	movl	%edi, %ebx
-	movl	$.LC0, %esi
+	leaq	.LC0(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	cmpl	$1, %ebx
 	jle	.L14
 	movl	$0, %eax
 	call	good_echo
-	jmp	.L15
-.L14:
-	movl	$0, %eax
-	call	echo
 .L15:
 	movl	$0, %eax
 	popq	%rbx
 	ret
+.L14:
+	movl	$0, %eax
+	call	echo
+	jmp	.L15
 	.size	main, .-main
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits
+	.section	.note.gnu.property,"a"
+	.align 8
+	.long	1f - 0f
+	.long	4f - 1f
+	.long	5
+0:
+	.string	"GNU"
+1:
+	.align 8
+	.long	0xc0000002
+	.long	3f - 2f
+2:
+	.long	0x3
+3:
+	.align 8
+4:

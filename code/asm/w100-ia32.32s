@@ -16,12 +16,12 @@ fun:
 call_fun:
 	pushl	%ebp
 	movl	%esp, %ebp
-	subl	$8, %esp
+	subl	$16, %esp
 	leal	12(%ebp), %eax
-	movl	%eax, 4(%esp)
-	movl	8(%ebp), %eax
-	movl	%eax, (%esp)
+	pushl	%eax
+	pushl	8(%ebp)
 	call	fun
+	addl	$16, %esp
 	leave
 	ret
 	.size	call_fun, .-call_fun
@@ -30,13 +30,22 @@ call_fun:
 afun:
 	pushl	%ebp
 	movl	%esp, %ebp
-	subl	$16, %esp
-	movl	$33, -8(%ebp)
-	movl	$515, -4(%ebp)
+	subl	$24, %esp
+	movl	%gs:20, %eax
+	movl	%eax, -12(%ebp)
+	xorl	%eax, %eax
+	movl	$33, -20(%ebp)
+	movl	$515, -16(%ebp)
 	movl	8(%ebp), %eax
-	movl	-8(%ebp,%eax,4), %eax
+	movl	-20(%ebp,%eax,4), %eax
+	movl	-12(%ebp), %edx
+	subl	%gs:20, %edx
+	jne	.L8
 	leave
 	ret
+.L8:
+	call	__stack_chk_fail_local
 	.size	afun, .-afun
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.hidden	__stack_chk_fail_local
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

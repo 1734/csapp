@@ -19,12 +19,12 @@ absdiff_se:
 	.type	gotodiff_se, @function
 gotodiff_se:
 	cmpq	%rsi, %rdi
-	jge	.L5
+	jge	.L7
 	addq	$1, lt_cnt(%rip)
 	movq	%rsi, %rax
 	subq	%rdi, %rax
 	ret
-.L5:
+.L7:
 	addq	$1, ge_cnt(%rip)
 	movq	%rdi, %rax
 	subq	%rsi, %rax
@@ -34,12 +34,12 @@ gotodiff_se:
 	.type	gotodiff_se_alt, @function
 gotodiff_se_alt:
 	cmpq	%rsi, %rdi
-	jl	.L8
+	jl	.L11
 	addq	$1, ge_cnt(%rip)
 	movq	%rdi, %rax
 	subq	%rsi, %rax
 	ret
-.L8:
+.L11:
 	addq	$1, lt_cnt(%rip)
 	movq	%rsi, %rax
 	subq	%rdi, %rax
@@ -59,17 +59,17 @@ main:
 	pushq	%r12
 	pushq	%rbp
 	pushq	%rbx
-	subq	$40, %rsp
+	subq	$8, %rsp
 	movq	%rsi, %rbp
 	movq	8(%rsi), %rdi
 	movl	$10, %edx
 	movl	$0, %esi
-	call	strtol
+	call	strtol@PLT
 	movslq	%eax, %rbx
 	movq	16(%rbp), %rdi
 	movl	$10, %edx
 	movl	$0, %esi
-	call	strtol
+	call	strtol@PLT
 	movslq	%eax, %rbp
 	movq	%rbp, %rsi
 	movq	%rbx, %rdi
@@ -81,26 +81,27 @@ main:
 	movq	%rax, %r13
 	movq	%rbp, %rsi
 	movq	%rbx, %rdi
-	call	cmovdiff
+	call	cmovdiff@PLT
 	movq	%rax, %r14
 	movq	%rbp, %rsi
 	movq	%rbx, %rdi
-	call	absdiff
+	call	absdiff@PLT
 	movq	%rax, %r15
 	movq	%rbp, %rsi
 	movq	%rbx, %rdi
-	call	absdiff_asm
-	movq	%rax, 16(%rsp)
-	movq	%r15, 8(%rsp)
-	movq	%r14, (%rsp)
+	call	absdiff_asm@PLT
+	subq	$8, %rsp
+	pushq	%rax
+	pushq	%r15
+	pushq	%r14
 	movq	%r13, %r9
 	movq	%r12, %r8
 	movq	%rbp, %rcx
 	movq	%rbx, %rdx
-	movl	$.LC0, %esi
+	leaq	.LC0(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movl	$0, %eax
 	addq	$40, %rsp
 	popq	%rbx
@@ -124,5 +125,5 @@ ge_cnt:
 	.size	lt_cnt, 8
 lt_cnt:
 	.zero	8
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

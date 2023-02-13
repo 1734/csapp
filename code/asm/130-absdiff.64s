@@ -3,24 +3,28 @@
 	.globl	absdiff
 	.type	absdiff, @function
 absdiff:
+	cmpq	%rsi, %rdi
+	jge	.L2
 	movq	%rsi, %rax
 	subq	%rdi, %rax
-	movq	%rdi, %rdx
-	subq	%rsi, %rdx
-	cmpq	%rsi, %rdi
-	cmovge	%rdx, %rax
+	ret
+.L2:
+	movq	%rdi, %rax
+	subq	%rsi, %rax
 	ret
 	.size	absdiff, .-absdiff
 	.globl	cmovdiff
 	.type	cmovdiff, @function
 cmovdiff:
-	movq	%rsi, %rax
-	subq	%rdi, %rax
-	movq	%rdi, %rdx
-	subq	%rsi, %rdx
+	movq	%rsi, %rdx
+	subq	%rdi, %rdx
+	movq	%rdi, %rax
+	subq	%rsi, %rax
 	cmpq	%rdi, %rsi
-	cmovle	%rdx, %rax
+	jle	.L4
+	movq	%rdx, %rax
+.L4:
 	ret
 	.size	cmovdiff, .-cmovdiff
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

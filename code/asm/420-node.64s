@@ -3,7 +3,35 @@
 	.globl	dothings
 	.type	dothings, @function
 dothings:
-	rep; ret
+	pushq	%rbp
+	pushq	%rbx
+	subq	$8, %rsp
+	movl	$32, %edi
+	call	malloc@PLT
+	movq	%rax, %rbp
+	movl	$16, %edi
+	call	malloc@PLT
+	movq	%rax, %rbx
+	movl	$24, %edi
+	call	malloc@PLT
+	vmovsd	24(%rbp), %xmm0
+	vmovsd	%xmm0, 16(%rbp)
+	movq	$0, (%rbx)
+	movq	$0x000000000, (%rbx)
+	movl	$1, (%rax)
+	movq	16(%rax), %rdx
+	movq	%rdx, 8(%rax)
+	movq	.LC1(%rip), %rcx
+	movq	%rcx, 8(%rax)
+	addq	$8, %rsp
+	popq	%rbx
+	popq	%rbp
+	ret
 	.size	dothings, .-dothings
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC1:
+	.long	0
+	.long	1072693248
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

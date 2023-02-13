@@ -6,10 +6,10 @@
 multstore:
 	push	rbx
 	mov	rbx, rdx
-	call	mult2
+	call	mult2@PLT
 	mov	QWORD PTR [rbx], rax
 	pop	rbx
 	ret
 	.size	multstore, .-multstore
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

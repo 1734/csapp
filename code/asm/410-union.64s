@@ -3,29 +3,26 @@
 	.globl	double2bits
 	.type	double2bits, @function
 double2bits:
-	vmovsd	%xmm0, -8(%rsp)
-	movq	-8(%rsp), %rax
+	vmovq	%xmm0, %rax
 	ret
 	.size	double2bits, .-double2bits
 	.globl	double2ulong
 	.type	double2ulong, @function
 double2ulong:
-	vucomisd	.LC0(%rip), %xmm0
-	jae	.L3
+	vcomisd	.LC0(%rip), %xmm0
+	jnb	.L3
 	vcvttsd2siq	%xmm0, %rax
 	ret
 .L3:
 	vsubsd	.LC0(%rip), %xmm0, %xmm0
 	vcvttsd2siq	%xmm0, %rax
-	movabsq	$-9223372036854775808, %rdx
-	xorq	%rdx, %rax
+	btcq	$63, %rax
 	ret
 	.size	double2ulong, .-double2ulong
 	.globl	ulong2double
 	.type	ulong2double, @function
 ulong2double:
-	movq	%rdi, -8(%rsp)
-	vmovsd	-8(%rsp), %xmm0
+	vmovq	%rdi, %xmm0
 	ret
 	.size	ulong2double, .-ulong2double
 	.globl	uu2double
@@ -34,13 +31,13 @@ uu2double:
 	salq	$32, %rsi
 	movl	%edi, %edi
 	orq	%rsi, %rdi
-	movq	%rdi, -8(%rsp)
-	vmovsd	-8(%rsp), %xmm0
+	vmovq	%rdi, %xmm0
 	ret
 	.size	uu2double, .-uu2double
 	.globl	uconvert
 	.type	uconvert, @function
 uconvert:
+	vxorps	%xmm0, %xmm0, %xmm0
 	testq	%rdi, %rdi
 	js	.L8
 	vcvtsi2sdq	%rdi, %xmm0, %xmm0
@@ -57,6 +54,7 @@ uconvert:
 	.globl	iconvert
 	.type	iconvert, @function
 iconvert:
+	vxorps	%xmm0, %xmm0, %xmm0
 	vcvtsi2sdq	%rdi, %xmm0, %xmm0
 	ret
 	.size	iconvert, .-iconvert
@@ -65,5 +63,5 @@ iconvert:
 .LC0:
 	.long	0
 	.long	1138753536
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

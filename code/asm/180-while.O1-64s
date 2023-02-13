@@ -13,7 +13,7 @@ loop_while:
 	addq	$1, %rdi
 	cmpq	%rsi, %rdi
 	jne	.L3
-	rep; ret
+	ret
 .L4:
 	movl	$1, %eax
 	ret
@@ -22,17 +22,17 @@ loop_while:
 	.type	loop_while2, @function
 loop_while2:
 	testq	%rsi, %rsi
-	jle	.L8
+	jle	.L9
 	movq	%rsi, %rax
-.L7:
+.L8:
 	imulq	%rdi, %rax
 	subq	%rdi, %rsi
 	testq	%rsi, %rsi
-	jg	.L7
-	rep; ret
-.L8:
+	jg	.L8
+	ret
+.L9:
 	movq	%rsi, %rax
 	ret
 	.size	loop_while2, .-loop_while2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

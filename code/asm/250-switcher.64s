@@ -5,35 +5,38 @@
 switcher:
 	cmpq	$7, %rdi
 	ja	.L2
-	jmp	*.L4(,%rdi,8)
+	leaq	.L4(%rip), %r8
+	movslq	(%r8,%rdi,4), %rax
+	addq	%r8, %rax
+	jmp	*%rax
 	.section	.rodata
-	.align 8
+	.align 4
 	.align 4
 .L4:
-	.quad	.L3
-	.quad	.L2
-	.quad	.L5
-	.quad	.L2
-	.quad	.L6
-	.quad	.L7
-	.quad	.L2
-	.quad	.L5
+	.long	.L7-.L4
+	.long	.L2-.L4
+	.long	.L3-.L4
+	.long	.L2-.L4
+	.long	.L6-.L4
+	.long	.L5-.L4
+	.long	.L2-.L4
+	.long	.L3-.L4
 	.text
-.L7:
-	xorq	$15, %rsi
-	movq	%rsi, %rdx
-.L3:
-	leaq	112(%rdx), %rdi
-	jmp	.L6
-.L5:
-	leaq	(%rdx,%rsi), %rdi
-	salq	$2, %rdi
-	jmp	.L6
-.L2:
-	movq	%rsi, %rdi
 .L6:
-	movq	%rdi, (%rcx)
+	movq	%rdi, %rsi
+	jmp	.L2
+.L5:
+	movq	%rsi, %rdx
+	xorq	$15, %rdx
+.L7:
+	leaq	112(%rdx), %rsi
+.L2:
+	movq	%rsi, (%rcx)
 	ret
+.L3:
+	addq	%rdx, %rsi
+	salq	$2, %rsi
+	jmp	.L2
 	.size	switcher, .-switcher
 	.section	.rodata.str1.8,"aMS",@progbits,1
 	.align 8
@@ -48,26 +51,30 @@ main:
 	pushq	%rbp
 	pushq	%rbx
 	subq	$56, %rsp
+	movl	%edi, %r12d
 	movq	%rsi, %r13
+	movq	%fs:40, %rax
+	movq	%rax, 40(%rsp)
+	xorl	%eax, %eax
 	movq	$1, 16(%rsp)
 	movq	$2, 24(%rsp)
 	movq	$3, 32(%rsp)
 	movl	$0, %ebx
-	leal	-1(%rdi), %r12d
 	jmp	.L9
 .L11:
 	movslq	%ebx, %rbp
 	movq	8(%r13,%rbp,8), %rdi
 	movl	$10, %edx
 	movl	$0, %esi
-	call	strtol
+	call	strtol@PLT
 	cltq
 	movq	%rax, 16(%rsp,%rbp,8)
 	addl	$1, %ebx
 .L9:
 	cmpl	$2, %ebx
 	jg	.L10
-	cmpl	%ebx, %r12d
+	leal	-1(%r12), %eax
+	cmpl	%ebx, %eax
 	jg	.L11
 .L10:
 	movq	32(%rsp), %r12
@@ -82,10 +89,13 @@ main:
 	movq	%r12, %r8
 	movq	%rbp, %rcx
 	movq	%rbx, %rdx
-	movl	$.LC0, %esi
+	leaq	.LC0(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
+	movq	40(%rsp), %rax
+	subq	%fs:40, %rax
+	jne	.L14
 	movl	$0, %eax
 	addq	$56, %rsp
 	popq	%rbx
@@ -93,6 +103,8 @@ main:
 	popq	%r12
 	popq	%r13
 	ret
+.L14:
+	call	__stack_chk_fail@PLT
 	.size	main, .-main
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

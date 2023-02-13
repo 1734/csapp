@@ -1,21 +1,30 @@
-GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
-Copyright (C) 2012 Free Software Foundation, Inc.
+GNU gdb (Ubuntu 12.0.90-0ubuntu1) 12.0.90
+Copyright (C) 2022 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-and "show warranty" for details.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
 This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
 For bug reporting instructions, please see:
-<http://bugs.launchpad.net/gdb-linaro/>...
-Reading symbols from /afs/cs.cmu.edu/project/ics3/code/asm/prog...(no debugging symbols found)...done.
-Breakpoint 1 at 0x400540
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
 
-Breakpoint 1, 0x0000000000400540 in multstore ()
-$1 = 0x7fffffffe818
-$2 = 0x400540
-0x0000000000400544 in multstore ()
-$3 = 0x400544
-0x000000000040054d in multstore ()
-$4 = 0x40054d
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from prog...
+(No debugging symbols found in prog)
+Breakpoint 1 at 0x1149
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, 0x0000555555555149 in multstore ()
+$1 = 0x7fffffffda88
+$2 = 0x555555555149
+0x000055555555514d in multstore ()
+$3 = 0x55555555514d
+0x0000555555555156 in multstore ()
+$4 = 0x555555555156
 2 * 3 --> 6
-[Inferior 1 (process 29584) exited normally]
+[Inferior 1 (process 4667) exited normally]

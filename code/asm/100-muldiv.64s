@@ -12,14 +12,15 @@ store_uprod:
 	.globl	store_prod
 	.type	store_prod, @function
 store_prod:
-	movq	%rdx, %rax
-	cqto
-	movq	%rsi, %rcx
+	movq	%rsi, %rax
+	movq	%rdx, %rsi
+	sarq	$63, %rsi
+	movq	%rax, %rcx
 	sarq	$63, %rcx
-	imulq	%rax, %rcx
-	imulq	%rsi, %rdx
-	addq	%rdx, %rcx
-	mulq	%rsi
+	imulq	%rdx, %rcx
+	imulq	%rax, %rsi
+	addq	%rsi, %rcx
+	mulq	%rdx
 	addq	%rcx, %rdx
 	movq	%rax, (%rdi)
 	movq	%rdx, 8(%rdi)
@@ -28,8 +29,8 @@ store_prod:
 	.globl	remdiv
 	.type	remdiv, @function
 remdiv:
-	movq	%rdx, %r8
 	movq	%rdi, %rax
+	movq	%rdx, %r8
 	cqto
 	idivq	%rsi
 	movq	%rax, (%r8)
@@ -39,13 +40,13 @@ remdiv:
 	.globl	uremdiv
 	.type	uremdiv, @function
 uremdiv:
-	movq	%rdx, %r8
 	movq	%rdi, %rax
+	movq	%rdx, %r8
 	movl	$0, %edx
 	divq	%rsi
 	movq	%rax, (%r8)
 	movq	%rdx, (%rcx)
 	ret
 	.size	uremdiv, .-uremdiv
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

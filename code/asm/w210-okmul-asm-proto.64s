@@ -3,9 +3,9 @@
 	.globl	tmult_ok_asm
 	.type	tmult_ok_asm, @function
 tmult_ok_asm:
-	imulq	%rdi, %rsi
-	movq	%rsi, (%rdx)
-	testq	%rsi, %rsi
+	imulq	%rsi, %rdi
+	movq	%rdi, (%rdx)
+	testq	%rdi, %rdi
 	setg	%al
 	movzbl	%al, %eax
 	ret
@@ -13,9 +13,9 @@ tmult_ok_asm:
 	.globl	umult_ok_asm
 	.type	umult_ok_asm, @function
 umult_ok_asm:
-	imulq	%rdi, %rsi
-	movq	%rsi, (%rdx)
-	testq	%rsi, %rsi
+	imulq	%rsi, %rdi
+	movq	%rdi, (%rdx)
+	testq	%rdi, %rdi
 	setne	%al
 	movzbl	%al, %eax
 	ret
@@ -23,20 +23,20 @@ umult_ok_asm:
 	.globl	tmult_sat
 	.type	tmult_sat, @function
 tmult_sat:
-	movq	%rdi, %rdx
-	notq	%rdx
-	shrq	$63, %rdx
-	movq	%rsi, %rax
-	shrq	$63, %rax
-	xorb	%dl, %al
-	movabsq	$-9223372036854775808, %rax
-	movabsq	$9223372036854775807, %rdx
-	cmove	%rax, %rdx
 	movq	%rdi, %rax
-	imulq	%rsi, %rax
-	testq	%rax, %rax
-	cmovne	%rdx, %rax
+	xorq	%rsi, %rax
+	js	.L6
+	movabsq	$9223372036854775807, %rax
+.L4:
+	imulq	%rsi, %rdi
+	testq	%rdi, %rdi
+	jne	.L3
+	movq	%rdi, %rax
+.L3:
 	ret
+.L6:
+	movabsq	$-9223372036854775808, %rax
+	jmp	.L4
 	.size	tmult_sat, .-tmult_sat
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

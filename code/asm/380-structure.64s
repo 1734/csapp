@@ -31,10 +31,10 @@ set_p:
 find_a:
 	movq	%rdi, p(%rip)
 	movl	%esi, j(%rip)
+	movslq	%esi, %rax
+	leaq	8(%rdi,%rax,4), %rax
 	movq	%rdi, q(%rip)
 	movl	%esi, k(%rip)
-	movslq	%esi, %rsi
-	leaq	8(%rdi,%rsi,4), %rax
 	ret
 	.size	find_a, .-find_a
 	.globl	link_p
@@ -47,9 +47,30 @@ link_p:
 	movq	%rax, 16(%rdi)
 	ret
 	.size	link_p, .-link_p
-	.comm	k,4,4
-	.comm	j,4,4
-	.comm	q,8,8
-	.comm	p,8,8
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.globl	k
+	.bss
+	.align 4
+	.type	k, @object
+	.size	k, 4
+k:
+	.zero	4
+	.globl	j
+	.align 4
+	.type	j, @object
+	.size	j, 4
+j:
+	.zero	4
+	.globl	q
+	.align 8
+	.type	q, @object
+	.size	q, 8
+q:
+	.zero	8
+	.globl	p
+	.align 8
+	.type	p, @object
+	.size	p, 8
+p:
+	.zero	8
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

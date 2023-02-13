@@ -3,11 +3,9 @@
 	.globl	len
 	.type	len, @function
 len:
-	movl	$0, %eax
-	movq	$-1, %rcx
-	repnz; scasb
-	notq	%rcx
-	leaq	-1(%rcx), %rax
+	subq	$8, %rsp
+	call	strlen@PLT
+	addq	$8, %rsp
 	ret
 	.size	len, .-len
 	.section	.rodata.str1.1,"aMS",@progbits,1
@@ -19,34 +17,37 @@ len:
 iptoa:
 	subq	$8, %rsp
 	movq	(%rsi), %r8
-	movl	$.LC0, %ecx
+	leaq	.LC0(%rip), %rcx
 	movq	$-1, %rdx
 	movl	$1, %esi
 	movl	$0, %eax
-	call	__sprintf_chk
+	call	__sprintf_chk@PLT
 	addq	$8, %rsp
 	ret
 	.size	iptoa, .-iptoa
 	.globl	intlen
 	.type	intlen, @function
 intlen:
-	subq	$56, %rsp
+	pushq	%rbx
+	subq	$32, %rsp
 	movq	%fs:40, %rax
-	movq	%rax, 40(%rsp)
+	movq	%rax, 24(%rsp)
 	xorl	%eax, %eax
-	movq	%rdi, 8(%rsp)
-	leaq	8(%rsp), %rsi
-	leaq	16(%rsp), %rdi
+	movq	%rdi, (%rsp)
+	movq	%rsp, %rsi
+	leaq	12(%rsp), %rbx
+	movq	%rbx, %rdi
 	call	iptoa
-	leaq	16(%rsp), %rdi
+	movq	%rbx, %rdi
 	call	len
-	movq	40(%rsp), %rdx
-	xorq	%fs:40, %rdx
-	je	.L5
-	call	__stack_chk_fail
-.L5:
-	addq	$56, %rsp
+	movq	24(%rsp), %rdx
+	subq	%fs:40, %rdx
+	jne	.L8
+	addq	$32, %rsp
+	popq	%rbx
 	ret
+.L8:
+	call	__stack_chk_fail@PLT
 	.size	intlen, .-intlen
 	.section	.rodata.str1.1
 .LC1:
@@ -57,11 +58,11 @@ intlen:
 itoa:
 	subq	$8, %rsp
 	movl	%esi, %r8d
-	movl	$.LC1, %ecx
+	leaq	.LC1(%rip), %rcx
 	movq	$-1, %rdx
 	movl	$1, %esi
 	movl	$0, %eax
-	call	__sprintf_chk
+	call	__sprintf_chk@PLT
 	addq	$8, %rsp
 	ret
 	.size	itoa, .-itoa
@@ -74,24 +75,27 @@ storeint:
 	.globl	intlen2
 	.type	intlen2, @function
 intlen2:
-	subq	$56, %rsp
+	pushq	%rbx
+	subq	$32, %rsp
 	movq	%fs:40, %rax
-	movq	%rax, 40(%rsp)
+	movq	%rax, 24(%rsp)
 	xorl	%eax, %eax
-	leaq	12(%rsp), %rsi
+	leaq	8(%rsp), %rsi
 	call	storeint
-	movl	12(%rsp), %esi
-	leaq	16(%rsp), %rdi
+	leaq	12(%rsp), %rbx
+	movl	8(%rsp), %esi
+	movq	%rbx, %rdi
 	call	itoa
-	leaq	16(%rsp), %rdi
+	movq	%rbx, %rdi
 	call	len
-	movq	40(%rsp), %rdx
-	xorq	%fs:40, %rdx
-	je	.L11
-	call	__stack_chk_fail
-.L11:
-	addq	$56, %rsp
+	movq	24(%rsp), %rdx
+	subq	%fs:40, %rdx
+	jne	.L15
+	addq	$32, %rsp
+	popq	%rbx
 	ret
+.L15:
+	call	__stack_chk_fail@PLT
 	.size	intlen2, .-intlen2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

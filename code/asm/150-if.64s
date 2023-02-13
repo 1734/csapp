@@ -18,11 +18,11 @@ test:
 	ret
 .L2:
 	cmpq	$2, %rdi
-	jle	.L4
+	jle	.L1
 	movq	%rdi, %rax
 	imulq	%rdx, %rax
-.L4:
-	rep; ret
+.L1:
+	ret
 	.size	test, .-test
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

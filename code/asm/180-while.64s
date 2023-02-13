@@ -12,7 +12,7 @@ loop_while:
 .L2:
 	cmpq	%rsi, %rdi
 	jl	.L3
-	rep; ret
+	ret
 	.size	loop_while, .-loop_while
 	.globl	loop_while2
 	.type	loop_while2, @function
@@ -25,7 +25,7 @@ loop_while2:
 .L5:
 	testq	%rsi, %rsi
 	jg	.L6
-	rep; ret
+	ret
 	.size	loop_while2, .-loop_while2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

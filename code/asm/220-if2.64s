@@ -6,18 +6,23 @@ test:
 	leaq	0(,%rdi,8), %rax
 	testq	%rsi, %rsi
 	jle	.L2
+	cmpq	%rsi, %rdi
+	jge	.L3
 	movq	%rsi, %rax
 	subq	%rdi, %rax
-	movq	%rdi, %rdx
-	andq	%rsi, %rdx
-	cmpq	%rsi, %rdi
-	cmovge	%rdx, %rax
+	ret
+.L3:
+	movq	%rdi, %rax
+	andq	%rsi, %rax
 	ret
 .L2:
-	addq	%rsi, %rdi
-	cmpq	$-2, %rsi
-	cmovle	%rdi, %rax
+	cmpq	$-1, %rsi
+	jl	.L5
+.L1:
 	ret
+.L5:
+	leaq	(%rdi,%rsi), %rax
+	jmp	.L1
 	.size	test, .-test
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

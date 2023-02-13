@@ -11,10 +11,12 @@ max:
 	.globl	wa_max
 	.type	wa_max, @function
 wa_max:
-	leaq	17(%rsi), %rax
-	leaq	23(%rdi), %rdx
 	cmpq	%rsi, %rdi
-	cmovge	%rdx, %rax
+	jge	.L3
+	leaq	17(%rsi), %rax
+	ret
+.L3:
+	leaq	23(%rdi), %rax
 	ret
 	.size	wa_max, .-wa_max
 	.globl	wm_max
@@ -35,10 +37,12 @@ wm_max:
 	.globl	wm_max2
 	.type	wm_max2, @function
 wm_max2:
+	movq	%rdi, %rax
+	cmpq	%rsi, %rdi
+	jge	.L9
 	movq	%rsi, %rax
 	salq	$4, %rax
-	cmpq	%rsi, %rdi
-	cmovge	%rdi, %rax
+.L9:
 	ret
 	.size	wm_max2, .-wm_max2
 	.globl	wm_max3
@@ -46,79 +50,75 @@ wm_max2:
 wm_max3:
 	movq	%rdi, %rax
 	cmpq	%rsi, %rdi
-	jge	.L12
+	jge	.L11
 	movq	%rsi, %rax
 	salq	$4, %rax
 	addq	%rsi, %rax
-.L12:
-	rep; ret
+.L11:
+	ret
 	.size	wm_max3, .-wm_max3
 	.globl	intabs
 	.type	intabs, @function
 intabs:
-	movq	%rdi, %rdx
-	sarq	$63, %rdx
 	movq	%rdi, %rax
-	xorq	%rdx, %rax
-	subq	%rdx, %rax
+	negq	%rax
+	cmovs	%rdi, %rax
 	ret
 	.size	intabs, .-intabs
 	.globl	cmul
 	.type	cmul, @function
 cmul:
-	movl	$0, %eax
+	movq	%rsi, %rax
 	testq	%rsi, %rsi
-	je	.L16
-	movq	%rdi, %rax
-	imulq	%rsi, %rax
-.L16:
-	rep; ret
+	je	.L14
+	imulq	%rdi, %rax
+.L14:
+	ret
 	.size	cmul, .-cmul
 	.globl	cmul2
 	.type	cmul2, @function
 cmul2:
 	cmpq	$1, %rsi
-	je	.L20
-	movq	%rdi, %rax
-	imulq	%rsi, %rax
+	je	.L17
+	movq	%rsi, %rax
+	imulq	%rdi, %rax
 	ret
-.L20:
+.L17:
 	movq	%rdi, %rax
 	ret
 	.size	cmul2, .-cmul2
 	.globl	cdiv
 	.type	cdiv, @function
 cdiv:
-	movl	$0, %eax
 	testq	%rsi, %rsi
-	je	.L22
+	je	.L19
 	movq	%rdi, %rax
 	cqto
 	idivq	%rsi
-.L22:
-	rep; ret
+	movq	%rax, %rsi
+.L19:
+	movq	%rsi, %rax
+	ret
 	.size	cdiv, .-cdiv
 	.globl	cdiv2
 	.type	cdiv2, @function
 cdiv2:
-	cmpq	$1, %rsi
-	je	.L26
 	movq	%rdi, %rax
+	cmpq	$1, %rsi
+	je	.L20
 	cqto
 	idivq	%rsi
-	ret
-.L26:
-	movq	%rdi, %rax
+.L20:
 	ret
 	.size	cdiv2, .-cdiv2
 	.globl	cread
 	.type	cread, @function
 cread:
 	testq	%rdi, %rdi
-	je	.L29
+	je	.L25
 	movq	(%rdi), %rax
 	ret
-.L29:
+.L25:
 	movl	$0, %eax
 	ret
 	.size	cread, .-cread
@@ -127,20 +127,23 @@ cread:
 cread_invalid:
 	movq	(%rdi), %rax
 	testq	%rdi, %rdi
-	movl	$0, %edx
-	cmove	%rdx, %rax
+	je	.L29
+.L26:
 	ret
+.L29:
+	movl	$0, %eax
+	jmp	.L26
 	.size	cread_invalid, .-cread_invalid
 	.globl	se_max
 	.type	se_max, @function
 se_max:
 	movq	%rdi, %rax
 	cmpq	%rsi, %rdi
-	jge	.L33
+	jge	.L31
 	addq	$1, lcount(%rip)
 	movq	%rsi, %rax
-.L33:
-	rep; ret
+.L31:
+	ret
 	.size	se_max, .-se_max
 	.globl	arith
 	.type	arith, @function
@@ -158,5 +161,5 @@ arith:
 	.size	lcount, 8
 lcount:
 	.zero	8
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

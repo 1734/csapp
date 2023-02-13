@@ -3,17 +3,18 @@
 	.globl	rfun
 	.type	rfun, @function
 rfun:
+	testq	%rdi, %rdi
+	jne	.L8
+	movl	$0, %eax
+	ret
+.L8:
 	pushq	%rbx
 	movq	%rdi, %rbx
-	movl	$0, %eax
-	testq	%rdi, %rdi
-	je	.L2
 	shrq	$2, %rdi
 	call	rfun
 	addq	%rbx, %rax
-.L2:
 	popq	%rbx
 	ret
 	.size	rfun, .-rfun
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

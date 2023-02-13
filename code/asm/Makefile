@@ -21,7 +21,7 @@ F64 =-m64
 FNOSP = -fno-stack-protector
 
 MFLAGS = -mavx2 -mfma
-CFLAGS = -Wall
+CFLAGS = -Wall -fcf-protection=none
 
 .SUFFIXES: .c .32s .32ns .64s .32d .64d .O1-64s
 

@@ -10,7 +10,7 @@ multstore:
 	.cfi_def_cfa_offset 16
 	.cfi_offset 3, -16
 	mov	rbx, rdx
-	call	mult2
+	call	mult2@PLT
 	mov	QWORD PTR [rbx], rax
 	pop	rbx
 	.cfi_def_cfa_offset 8
@@ -18,5 +18,5 @@ multstore:
 	.cfi_endproc
 .LFE0:
 	.size	multstore, .-multstore
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

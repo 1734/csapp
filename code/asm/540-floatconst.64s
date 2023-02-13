@@ -44,66 +44,67 @@ decode:
 	pushq	%rbp
 	pushq	%rbx
 	subq	$24, %rsp
+	vxorps	%xmm0, %xmm0, %xmm0
 	movl	%edi, %edx
 	movl	%esi, %ebx
 	movl	%esi, %r13d
 	shrl	$20, %r13d
 	movl	%esi, %r12d
 	andl	$1048575, %r12d
-	movq	%r12, %rcx
-	salq	$32, %rcx
-	movabsq	$4503599627370496, %rax
-	addq	%rax, %rcx
-	movl	%edi, %eax
+	movq	%r12, %rax
+	salq	$32, %rax
+	movabsq	$4503599627370496, %rcx
+	addq	%rcx, %rax
+	movl	%edi, %ecx
 	leaq	(%rcx,%rax), %rbp
-	vcvtsi2sdq	%rbp, %xmm0, %xmm0
-	vmulsd	.LC4(%rip), %xmm0, %xmm1
+	vcvtsi2sdq	%rbp, %xmm0, %xmm1
+	vmulsd	.LC4(%rip), %xmm1, %xmm2
 	leal	-1023(%r13), %ecx
 	movl	$1, %eax
 	sall	%cl, %eax
-	vcvtsi2sd	%eax, %xmm0, %xmm0
-	vmovsd	%xmm1, (%rsp)
-	vmulsd	%xmm1, %xmm0, %xmm2
-	vmovsd	%xmm2, 8(%rsp)
+	vcvtsi2sdl	%eax, %xmm0, %xmm0
+	vmovsd	%xmm2, (%rsp)
+	vmulsd	%xmm2, %xmm0, %xmm3
+	vmovsd	%xmm3, 8(%rsp)
 	movl	%edi, %ecx
-	movl	$.LC5, %esi
+	leaq	.LC5(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movl	%ebx, %ecx
 	movl	%ebx, %edx
-	movl	$.LC6, %esi
+	leaq	.LC6(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movl	%r13d, %ecx
 	movl	%r13d, %edx
-	movl	$.LC7, %esi
+	leaq	.LC7(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movl	%r12d, %ecx
 	movl	%r12d, %edx
-	movl	$.LC8, %esi
+	leaq	.LC8(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	movq	%rbp, %rcx
 	movq	%rbp, %rdx
-	movl	$.LC9, %esi
+	leaq	.LC9(%rip), %rsi
 	movl	$1, %edi
 	movl	$0, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	vmovsd	(%rsp), %xmm0
-	movl	$.LC10, %esi
+	leaq	.LC10(%rip), %rsi
 	movl	$1, %edi
 	movl	$1, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	vmovsd	8(%rsp), %xmm0
-	movl	$.LC11, %esi
+	leaq	.LC11(%rip), %rsi
 	movl	$1, %edi
 	movl	$1, %eax
-	call	__printf_chk
+	call	__printf_chk@PLT
 	addq	$24, %rsp
 	popq	%rbx
 	popq	%rbp
@@ -117,29 +118,31 @@ main:
 	pushq	%rbp
 	pushq	%rbx
 	subq	$8, %rsp
-	movq	%rsi, %rbp
-	movl	$1074340347, %esi
-	movl	$1413754136, %ebx
 	cmpl	$3, %edi
-	jne	.L9
-	movq	8(%rbp), %rdi
-	movl	$0, %edx
-	movl	$0, %esi
-	call	strtoul
-	movl	%eax, %ebx
-	movq	16(%rbp), %rdi
-	movl	$0, %edx
-	movl	$0, %esi
-	call	strtoul
-	movl	%eax, %esi
+	je	.L12
+	movl	$1074340347, %esi
+	movl	$1413754136, %ebp
 .L9:
-	movl	%ebx, %edi
+	movl	%ebp, %edi
 	call	decode
 	movl	$0, %eax
 	addq	$8, %rsp
 	popq	%rbx
 	popq	%rbp
 	ret
+.L12:
+	movq	%rsi, %rbx
+	movq	8(%rsi), %rdi
+	movl	$0, %edx
+	movl	$0, %esi
+	call	strtoul@PLT
+	movl	%eax, %ebp
+	movq	16(%rbx), %rdi
+	movl	$0, %edx
+	movl	$0, %esi
+	call	strtoul@PLT
+	movl	%eax, %esi
+	jmp	.L9
 	.size	main, .-main
 	.section	.rodata.cst8,"aM",@progbits,8
 	.align 8
@@ -152,7 +155,7 @@ main:
 	.long	1074340347
 	.align 8
 .LC2:
-	.long	3435973837
+	.long	-858993459
 	.long	1073532108
 	.align 8
 .LC3:
@@ -162,5 +165,5 @@ main:
 .LC4:
 	.long	0
 	.long	1018167296
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

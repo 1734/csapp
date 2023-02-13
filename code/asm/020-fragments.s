@@ -12,7 +12,7 @@ movmix:
 	movl $0x4050,%eax  	# Immediate--Register, 4 bytes
 	movw  %bp,%sp  		# Register--Register,  2 bytes
 	movb (%rdi,%rcx),%al  	# Memory--Register,    1 byte
-	movb $-17,(%esp)  	# Immediate--Memory,   1 byte
+	movb $-17,(%rsp)  	# Immediate--Memory,   1 byte
 	movq %rax,-12(%rbp)  	# Register--Memory,    8 bytes
 	/* $end 020-movmix-sa 0 */
 

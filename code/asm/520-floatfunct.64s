@@ -3,87 +3,117 @@
 	.globl	funct
 	.type	funct, @function
 funct:
-	vunpcklps	%xmm1, %xmm1, %xmm1
-	vcvtps2pd	%xmm1, %xmm1
-	vmulsd	%xmm0, %xmm1, %xmm0
-	vcvtsi2sd	%edi, %xmm1, %xmm1
-	vdivsd	%xmm1, %xmm2, %xmm2
-	vsubsd	%xmm2, %xmm0, %xmm0
+	vcvtss2sd	%xmm1, %xmm1, %xmm1
+	vmulsd	%xmm0, %xmm1, %xmm1
+	vxorps	%xmm0, %xmm0, %xmm0
+	vcvtsi2sdl	%edi, %xmm0, %xmm0
+	vdivsd	%xmm0, %xmm2, %xmm2
+	vsubsd	%xmm2, %xmm1, %xmm0
 	ret
 	.size	funct, .-funct
 	.globl	find_range
 	.type	find_range, @function
 find_range:
 	vxorps	%xmm1, %xmm1, %xmm1
-	vucomiss	%xmm0, %xmm1
-	ja	.L5
+	vcomiss	%xmm0, %xmm1
+	ja	.L6
 	vucomiss	%xmm1, %xmm0
-	jp	.L8
+	jp	.L9
+	jne	.L9
 	movl	$1, %eax
-	je	.L3
-.L8:
-	vucomiss	.LC0(%rip), %xmm0
-	setbe	%al
-	movzbl	%al, %eax
-	addl	$2, %eax
 	ret
-.L5:
+.L9:
+	vcomiss	.LC0(%rip), %xmm0
+	jbe	.L11
+	movl	$2, %eax
+	ret
+.L6:
 	movl	$0, %eax
-.L3:
-	rep; ret
+	ret
+.L11:
+	movl	$3, %eax
+	ret
 	.size	find_range, .-find_range
 	.globl	xfer
 	.type	xfer, @function
 xfer:
-	vcvtsi2ss	ss1(%rip), %xmm0, %xmm0
-	vmovss	%xmm0, si+16(%rip)
-	vcvtsi2sd	ss2(%rip), %xmm0, %xmm0
-	vmovsd	%xmm0, si+24(%rip)
-	vcvtsi2ssq	ss1+8(%rip), %xmm0, %xmm0
-	vmovss	%xmm0, sl+16(%rip)
-	vcvtsi2sdq	ss2+8(%rip), %xmm0, %xmm0
-	vmovsd	%xmm0, sl+24(%rip)
-	vcvttss2si	ss1+16(%rip), %eax
+	vxorps	%xmm0, %xmm0, %xmm0
+	vcvtsi2ssl	ss1(%rip), %xmm0, %xmm1
+	vmovss	%xmm1, 16+si(%rip)
+	vcvtsi2sdl	ss2(%rip), %xmm0, %xmm1
+	vmovsd	%xmm1, 24+si(%rip)
+	vcvtsi2ssq	8+ss1(%rip), %xmm0, %xmm1
+	vmovss	%xmm1, 16+sl(%rip)
+	vcvtsi2sdq	8+ss2(%rip), %xmm0, %xmm0
+	vmovsd	%xmm0, 24+sl(%rip)
+	vcvttss2sil	16+ss1(%rip), %eax
 	movl	%eax, sf(%rip)
-	vmovss	ss2+16(%rip), %xmm0
-	vcvttss2siq	%xmm0, %rax
-	movq	%rax, sf+8(%rip)
-	vunpcklps	%xmm0, %xmm0, %xmm0
-	vcvtps2pd	%xmm0, %xmm1
-	vmovsd	%xmm1, sf+24(%rip)
-	vmovsd	ss1+24(%rip), %xmm0
-	vcvttsd2si	%xmm0, %eax
+	vcvttss2siq	16+ss2(%rip), %rax
+	movq	%rax, 8+sf(%rip)
+	vcvtss2sd	16+ss2(%rip), %xmm0, %xmm0
+	vmovsd	%xmm0, 24+sf(%rip)
+	vcvttsd2sil	24+ss1(%rip), %eax
 	movl	%eax, sd(%rip)
-	vcvttsd2siq	ss2+24(%rip), %rax
-	movq	%rax, sd+8(%rip)
-	vmovddup	%xmm0, %xmm2
-	vcvtpd2psx	%xmm2, %xmm2
-	vmovss	%xmm2, sd+16(%rip)
+	vcvttsd2siq	24+ss2(%rip), %rax
+	movq	%rax, 8+sd(%rip)
+	vcvtsd2ss	24+ss1(%rip), %xmm0, %xmm0
+	vmovss	%xmm0, 16+sd(%rip)
 	ret
 	.size	xfer, .-xfer
 	.globl	copy_vals
 	.type	copy_vals, @function
 copy_vals:
-	vcvttss2si	%xmm0, %eax
+	vcvttss2sil	%xmm0, %eax
 	movl	%eax, (%rdx)
 	vcvttsd2siq	%xmm1, %rax
 	movq	%rax, (%rcx)
-	vmovddup	%xmm1, %xmm2
-	vcvtpd2psx	%xmm2, %xmm2
-	vmovss	%xmm2, (%r8)
+	vcvtsd2ss	%xmm1, %xmm1, %xmm1
+	vmovss	%xmm1, (%r8)
+	vxorps	%xmm0, %xmm0, %xmm0
 	vcvtsi2sdq	%rsi, %xmm0, %xmm0
 	vmovsd	%xmm0, (%r9)
 	ret
 	.size	copy_vals, .-copy_vals
-	.comm	sd,32,32
-	.comm	sf,32,32
-	.comm	sl,32,32
-	.comm	si,32,32
-	.comm	ss2,32,32
-	.comm	ss1,32,32
+	.globl	sd
+	.bss
+	.align 32
+	.type	sd, @object
+	.size	sd, 32
+sd:
+	.zero	32
+	.globl	sf
+	.align 32
+	.type	sf, @object
+	.size	sf, 32
+sf:
+	.zero	32
+	.globl	sl
+	.align 32
+	.type	sl, @object
+	.size	sl, 32
+sl:
+	.zero	32
+	.globl	si
+	.align 32
+	.type	si, @object
+	.size	si, 32
+si:
+	.zero	32
+	.globl	ss2
+	.align 32
+	.type	ss2, @object
+	.size	ss2, 32
+ss2:
+	.zero	32
+	.globl	ss1
+	.align 32
+	.type	ss1, @object
+	.size	ss1, 32
+ss1:
+	.zero	32
 	.section	.rodata.cst4,"aM",@progbits,4
 	.align 4
 .LC0:
 	.long	0
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

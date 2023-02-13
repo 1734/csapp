@@ -6,36 +6,39 @@ switch_eg:
 	subq	$100, %rsi
 	cmpq	$6, %rsi
 	ja	.L8
-	jmp	*.L4(,%rsi,8)
+	leaq	.L4(%rip), %rcx
+	movslq	(%rcx,%rsi,4), %rax
+	addq	%rcx, %rax
+	jmp	*%rax
 	.section	.rodata
-	.align 8
+	.align 4
 	.align 4
 .L4:
-	.quad	.L3
-	.quad	.L8
-	.quad	.L5
-	.quad	.L6
-	.quad	.L7
-	.quad	.L8
-	.quad	.L7
+	.long	.L7-.L4
+	.long	.L8-.L4
+	.long	.L6-.L4
+	.long	.L5-.L4
+	.long	.L3-.L4
+	.long	.L8-.L4
+	.long	.L3-.L4
 	.text
-.L3:
+.L7:
 	leaq	(%rdi,%rdi,2), %rax
 	leaq	(%rdi,%rax,4), %rdi
 	jmp	.L2
-.L5:
-	addq	$10, %rdi
 .L6:
+	addq	$10, %rdi
+.L5:
 	addq	$11, %rdi
-	jmp	.L2
-.L7:
+.L2:
+	movq	%rdi, (%rdx)
+	ret
+.L3:
 	imulq	%rdi, %rdi
 	jmp	.L2
 .L8:
 	movl	$0, %edi
-.L2:
-	movq	%rdi, (%rdx)
-	ret
+	jmp	.L2
 	.size	switch_eg, .-switch_eg
 	.globl	switch_eg_impl
 	.type	switch_eg_impl, @function
@@ -43,7 +46,8 @@ switch_eg_impl:
 	subq	$100, %rsi
 	cmpq	$6, %rsi
 	ja	.L10
-	jmp	*jt.2196(,%rsi,8)
+	leaq	jt.0(%rip), %rax
+	jmp	*(%rax,%rsi,8)
 .L11:
 	leaq	(%rdi,%rdi,2), %rax
 	leaq	(%rdi,%rax,4), %rdi
@@ -62,11 +66,11 @@ switch_eg_impl:
 	movq	%rdi, (%rdx)
 	ret
 	.size	switch_eg_impl, .-switch_eg_impl
-	.section	.rodata
+	.section	.data.rel.ro.local,"aw"
 	.align 32
-	.type	jt.2196, @object
-	.size	jt.2196, 56
-jt.2196:
+	.type	jt.0, @object
+	.size	jt.0, 56
+jt.0:
 	.quad	.L11
 	.quad	.L10
 	.quad	.L13
@@ -74,5 +78,5 @@ jt.2196:
 	.quad	.L15
 	.quad	.L10
 	.quad	.L15
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

@@ -3,27 +3,35 @@
 	.globl	swap_add
 	.type	swap_add, @function
 swap_add:
-	movq	(%rdi), %rdx
-	movq	(%rsi), %rax
-	movq	%rax, (%rdi)
-	movq	%rdx, (%rsi)
+	movq	(%rdi), %rax
+	movq	(%rsi), %rdx
+	movq	%rdx, (%rdi)
+	movq	%rax, (%rsi)
 	addq	%rdx, %rax
 	ret
 	.size	swap_add, .-swap_add
 	.globl	caller
 	.type	caller, @function
 caller:
-	subq	$16, %rsp
-	movq	$534, (%rsp)
-	movq	$1057, 8(%rsp)
-	leaq	8(%rsp), %rsi
-	movq	%rsp, %rdi
+	subq	$40, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, 24(%rsp)
+	xorl	%eax, %eax
+	movq	$534, 8(%rsp)
+	movq	$1057, 16(%rsp)
+	leaq	16(%rsp), %rsi
+	leaq	8(%rsp), %rdi
 	call	swap_add
-	movq	(%rsp), %rdx
-	subq	8(%rsp), %rdx
+	movq	8(%rsp), %rdx
+	subq	16(%rsp), %rdx
 	imulq	%rdx, %rax
-	addq	$16, %rsp
+	movq	24(%rsp), %rdx
+	subq	%fs:40, %rdx
+	jne	.L5
+	addq	$40, %rsp
 	ret
+.L5:
+	call	__stack_chk_fail@PLT
 	.size	caller, .-caller
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

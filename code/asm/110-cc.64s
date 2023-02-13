@@ -51,7 +51,7 @@ ulieq:
 	.globl	peq
 	.type	peq, @function
 peq:
-	cmpq	%rsi, %rdi
+	cmpq	%rdi, %rsi
 	sete	%al
 	movzbl	%al, %eax
 	ret
@@ -112,7 +112,18 @@ test_ile:
 	movzbl	%al, %eax
 	ret
 	.size	test_ile, .-test_ile
-	.comm	y,4,4
-	.comm	x,4,4
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.globl	y
+	.bss
+	.align 4
+	.type	y, @object
+	.size	y, 4
+y:
+	.zero	4
+	.globl	x
+	.align 4
+	.type	x, @object
+	.size	x, 4
+x:
+	.zero	4
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

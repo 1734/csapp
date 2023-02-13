@@ -10,5 +10,5 @@ sp_init:
 	movq	%rdi, 16(%rdi)
 	ret
 	.size	sp_init, .-sp_init
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

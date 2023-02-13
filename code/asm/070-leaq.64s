@@ -16,5 +16,5 @@ scale2:
 	leaq	(%rax,%rdx,8), %rax
 	ret
 	.size	scale2, .-scale2
-	.ident	"GCC: (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1"
+	.ident	"GCC: (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0"
 	.section	.note.GNU-stack,"",@progbits

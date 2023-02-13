@@ -10,9 +10,9 @@ Disassembly of section .text:
    5:	48 d1 f8             	sar    %rax
    8:	48 85 c0             	test   %rax,%rax
    b:	7f f8                	jg     5 <loop+0x5>
-   d:	f3 c3                	repz retq 
+   d:	c3                   	ret    
 
-000000000000000f <main>:
-   f:	48 c7 c7 fe ff ff ff 	mov    $0xfffffffffffffffe,%rdi
-  16:	e8 00 00 00 00       	callq  1b <main+0xc>
-  1b:	f3 c3                	repz retq 
+000000000000000e <main>:
+   e:	48 c7 c7 fe ff ff ff 	mov    $0xfffffffffffffffe,%rdi
+  15:	e8 00 00 00 00       	call   1a <main+0xc>
+  1a:	c3                   	ret    
