@@ -1,7 +1,7 @@
 CC = gcc
 CSAPP_INC = ../include
 CSAPP_SRC = ../src
-CFLAGS = -Wall -Og -I $(CSAPP_INC) -I . 
+CFLAGS = -Wall -Og -I $(CSAPP_INC) -I . -fPIE -fcf-protection=none
 LDLIBS = -lpthread
 
 PROGS = fragments.o\
@@ -75,17 +75,17 @@ rfork-driver: rfork-driver.c rfork.c
 
 # hello-asm.s is a handwritten asm program for syscalls using the IA32 convention
 hello-asm32: hello-asm32.s
-	$(CC) -m64 -o hello-asm32 hello-asm32.s
+	$(CC) -m64 -no-pie -o hello-asm32 hello-asm32.s
 
 # hello-asm64.s is a handwritten asm program for syscalls using the x86-64 convention
 hello-asm64: hello-asm64.s
-	$(CC) -m64 -o hello-asm64 hello-asm64.s
+	$(CC) -m64 -no-pie -o hello-asm64 hello-asm64.s
 
 $(PROGS): $(CSAPP_SRC)/csapp.o
 
 $(CSAPP_SRC)/csapp.o: $(CSAPP_SRC)/csapp.c $(CSAPP_INC)/csapp.h
 
 clean:
-	rm -f $(PROGS) *.o *~
+	rm -f $(PROGS) *.o *~ $(CSAPP_SRC)/csapp.o
 
 
