@@ -29,11 +29,11 @@ void *malloc(size_t size)
 
     mallocp = dlsym(RTLD_NEXT, "malloc"); /* Get address of libc malloc */
     if ((error = dlerror()) != NULL) {
-        fputs(error, stderr);
+        // fputs(error, stderr);
         exit(1);
     }
     char *ptr = mallocp(size); /* Call libc malloc */
-    printf("malloc(%d) = %p\n", (int)size, ptr);
+    // printf("malloc(%d) = %p\n", (int)size, ptr);
     return ptr;
 }
 
@@ -48,11 +48,11 @@ void free(void *ptr)
 
     freep = dlsym(RTLD_NEXT, "free"); /* Get address of libc free */
     if ((error = dlerror()) != NULL) {
-        fputs(error, stderr);
+        // fputs(error, stderr);
         exit(1);
     }
     freep(ptr); /* Call libc free */
-    printf("free(%p)\n", ptr);
+    // printf("free(%p)\n", ptr);
 }
 #endif
 /* $end interposer */
