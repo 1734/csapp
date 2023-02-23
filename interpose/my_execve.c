@@ -63,6 +63,20 @@ size_t count_char_vec(char *const argv[])
     return num;
 }
 
+size_t count_char(char *const argv[])
+{
+    size_t num = 0;
+    while(*argv) {
+        num += strlen(*argv)+1;
+        argv++;
+        if (num > 1024*1024) {
+            printf("[ERROR]: More than %zu characters are found!\n", num);
+            exit(1);
+        }
+    }
+    return num;
+}
+
 size_t print_char_vec(char *const argv[])
 {
     while(*argv) {
@@ -168,27 +182,44 @@ int execve(const char *pathname, char *const argv[], char *const envp[])
     printf("[Executing(execve)]: %s\n", cmdline_buf);
     printf("[Env LD_PRELOAD]: %s\n", getenv("LD_PRELOAD"));
     char** preload_envp;
-    // printf("-------------------------------------\n");
-    // print_char_vec(environ);
-    // print_char_vec(envp);
-    // printf("-------------------------------------\n");
-    if (!my_preload_ready(&preload_envp, (char**)envp)) {
-        printf("xxxxxx\n");
-        printf("%s\n", *preload_envp);
+    int is_ready = my_preload_ready(&preload_envp, (char**)envp);
+    size_t more_space_len = 0;
+    size_t old_envp_len = count_char_vec(envp);
+    if (!is_ready) {
+        // LD_PRELOAD="xxx ..."", where xxx is not ./libmy_execve.so.
+        if (*preload_envp) {
+            more_space_len = len_path_libmy_execev_so + 1 +strlen(*preload_envp);
+        }
+        // LD_PRELOAD does not exist in env.
+        else {
+            more_space_len = sizeof(char*) * old_envp_len + len_preload_env_name + 1 + len_path_libmy_execev_so;
+        }
+    }
+    // Align to sizeof(char*).
+    more_space_len = sizeof(char*) *
+                     (1 + 
+                      (more_space_len - 1) / sizeof(char*)
+                     );
+    char more_space[more_space_len];
+    if (!is_ready) {
+        // LD_PRELOAD="xxx ..."", where xxx is not ./libmy_execve.so.
         if (*preload_envp) {
             char* old_preload_value = (*preload_envp) + len_preload_env_name + 1;
-            // char new_preload_name_and_value[len_preload_env_name+1+len_path_libmy_execev_so+strlen(old_preload_value)+1];
-            printf("%d\n", len_preload_env_name+1+len_path_libmy_execev_so+strlen(old_preload_value)+1);
-            char new_preload_name_and_value[29];
-            // char new_preload_name_and_value[100]="LD_PRELOAD=./libmy_execve.so";
-            // char new_preload_name_and_value[100]={0};
-            // sprintf(new_preload_name_and_value, "%s=%s", PRELOAD_ENV_NAME, "./libmy_execve.so");
-            sprintf(new_preload_name_and_value, "%s=%s%s", PRELOAD_ENV_NAME, path_libmy_execev_so, old_preload_value);
-            new_preload_name_and_value[len_preload_env_name+1+len_path_libmy_execev_so+strlen(old_preload_value)] = 0;
-            new_preload_name_and_value[28] = 0;
-            printf("[new_preload_name_and_value]: %s\n", new_preload_name_and_value);
-            *preload_envp = new_preload_name_and_value;
-            // print_char_vec(envp);
+            *preload_envp = more_space;
+            sprintf(more_space, "%s=%s %s", PRELOAD_ENV_NAME, path_libmy_execev_so, old_preload_value);
+        }
+        // LD_PRELOAD does not exist in env.
+        else {
+            char** tmp_old_envp = (char**)envp;
+            envp = (char**)more_space;
+            char** tmp_new_envp = (char**)envp;
+            while(*tmp_old_envp) {
+                *(tmp_new_envp++) = *(tmp_old_envp++);
+            }
+            char* new_preload_env = (char*)(tmp_new_envp+2);
+            sprintf(new_preload_env, "%s=%s", PRELOAD_ENV_NAME, path_libmy_execev_so);
+            *(tmp_new_envp++) = new_preload_env;
+            *tmp_new_envp = NULL;
         }
     }
     int status = origin_execve_ptr(pathname, argv, envp);
