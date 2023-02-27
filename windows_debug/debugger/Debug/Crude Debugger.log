@@ -1,0 +1,2 @@
+﻿E:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.Cpp.Analysis.props(24,5): warning MSB4211: 正在首次将属性“MsvcAnalysisPluginPath”设置为某个值，但已在“E:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CodeAnalysis.Extensions.props (33,5)”处使用了该属性。
+E:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(483,5): error MSB8041: 此项目需要 MFC 库。从 Visual Studio 安装程序(单个组件选项卡)为正在使用的任何工具集和体系结构安装它们。
