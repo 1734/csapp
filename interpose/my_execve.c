@@ -7,9 +7,11 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
+// ARG_MAX PATH_MAX
+#include <linux/limits.h>
 
-#define MAX_ARG_LEN 2048
-#define MAX_PATH_LEN 1024
+#define MAX_ARG_LEN (ARG_MAX>>1)
+#define MAX_PATH_LEN PATH_MAX
 #define PRELOAD_ENV_NAME "LD_PRELOAD"
 #define MYPRELOADSO "MY_PRELOAD_SO"
 
